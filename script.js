@@ -33,8 +33,8 @@ clickBtn.addEventListener('click', function () {
     customFunction();
 });
 
-// 2. Mouseover Event Handler
-mouseoverDiv.addEventListener('mouseover', function () {
+// 2. Mouseenter Event Handler (Fixed: Fired only once per hover session)
+mouseoverDiv.addEventListener('mouseenter', function () {
     // Display an alert message with the age at the time of the current picture
     const currentAge = growthStages[currentStageIndex].age;
     alert("I was at this age in this picture: " + currentAge);
