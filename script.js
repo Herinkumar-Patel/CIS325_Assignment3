@@ -1,41 +1,101 @@
-// Array of image growth stages and corresponding ages
-const growthStages = [
-    { src: 'image1.jpeg', age: 'Baby (0-1 year)' },
-    { src: 'image2.jpeg', age: 'Toddler (3 years)' },
-    { src: 'image3.jpeg', age: 'Kiddo (7 years)' },
-    { src: 'image4.jpeg', age: 'Pre-teen (12 years)' },
-    { src: 'image5.jpeg', age: 'High School (17 years)' }
-];
+document.addEventListener("DOMContentLoaded", function () {
 
-let currentStageIndex = 0;
+    const clickBtn = document.getElementById("clickBtn");
+    const displayImg = document.getElementById("displayImg");
 
-// Constants for elements
-const clickBtn = document.getElementById('clickBtn');
-const mouseoverDiv = document.getElementById('mouseoverImage');
-const displayImg = document.getElementById('displayImg');
+    if (clickBtn && displayImg) {
+        const images = ["image1.jpeg", "image2.jpeg", "image3.jpeg"];
+        let currentIndex = 0;
 
-/**
- * customFunction - Logs a message to the console
- */
-function customFunction() {
-    console.log("Changed the picture");
-}
+        clickBtn.addEventListener("click", function () {
+            currentIndex = (currentIndex + 1) % images.length;
+            displayImg.src = images[currentIndex];
+        });
+    }
 
-// 1. Click Event Handler
-clickBtn.addEventListener('click', function () {
-    // Cycle to the next image index
-    currentStageIndex = (currentStageIndex + 1) % growthStages.length;
+    const form = document.getElementById("registrationForm");
 
-    // Update the image source
-    displayImg.src = growthStages[currentStageIndex].src;
+    if (form) {
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+            clearErrors();
 
-    // Call the custom function
-    customFunction();
-});
+            let isValid = true;
 
-// 2. Mouseenter Event Handler (Fixed: Fired only once per hover session)
-mouseoverDiv.addEventListener('mouseenter', function () {
-    // Display an alert message with the age at the time of the current picture
-    const currentAge = growthStages[currentStageIndex].age;
-    alert("I was at this age in this picture: " + currentAge);
+            const firstName = document.getElementById("firstName").value.trim();
+            const lastName = document.getElementById("lastName").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirmPassword").value;
+            const age = document.getElementById("age").value.trim();
+            const phone = document.getElementById("phoneNumber").value.trim();
+
+            if (firstName.length < 2) {
+                showError("firstNameError", "First name must be at least 2 characters.");
+                isValid = false;
+            }
+
+            if (lastName.length < 2) {
+                showError("lastNameError", "Last name must be at least 2 characters.");
+                isValid = false;
+            }
+
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email)) {
+                showError("emailError", "Enter a valid email address.");
+                isValid = false;
+            }
+
+            const passwordPattern = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
+            if (!passwordPattern.test(password)) {
+                showError("passwordError", "Password must be 8+ characters, include 1 uppercase and 1 number.");
+                isValid = false;
+            }
+
+            if (password !== confirmPassword) {
+                showError("confirmPasswordError", "Passwords do not match.");
+                isValid = false;
+            }
+
+            if (age) {
+                if (isNaN(age) || age < 18 || age > 100) {
+                    showError("ageError", "Age must be between 18 and 100.");
+                    isValid = false;
+                }
+            }
+
+            if (phone) {
+                const phonePattern = /^\d{3}-\d{3}-\d{4}$/;
+                if (!phonePattern.test(phone)) {
+                    showError("phoneError", "Phone must be XXX-XXX-XXXX format.");
+                    isValid = false;
+                }
+            }
+
+            if (isValid) {
+                const userData = {
+                    firstName,
+                    lastName,
+                    email,
+                    password
+                };
+
+                if (age) userData.age = Number(age);
+                if (phone) userData.phoneNumber = phone;
+
+                console.log(userData);
+                alert("Form submitted successfully! Check console for JSON.");
+                form.reset();
+            }
+        });
+    }
+
+    function showError(id, message) {
+        document.getElementById(id).textContent = message;
+    }
+
+    function clearErrors() {
+        const errors = document.querySelectorAll(".error");
+        errors.forEach(error => error.textContent = "");
+    }
 });
